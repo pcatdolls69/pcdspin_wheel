@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>轉盤抽獎</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #ff6a00, #ff9e2c);
+      font-family: sans-serif;
+      color: #fff;
+    }
+    #wheelCanvas {
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    #spinBtn {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background: #fff;
+      color: #ff6a00;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #spinBtn:disabled {
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="wheelCanvas" width="300" height="300"></canvas>
+  <button id="spinBtn">🎯 開始抽獎</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/winwheel@2.8.0/Winwheel.min.js"></script>
+  <script>
+    const wheel = new Winwheel({
+      'canvasId': 'wheelCanvas',
+      'numSegments': 5,
+      'outerRadius': 150,
+      'segments': [
+        {'fillStyle': '#ffcc00', 'text': 'CA$0'},
+        {'fillStyle': '#ff9900', 'text': 'CA$8'},
+        {'fillStyle': '#ff6600', 'text': 'CA$16'},
+        {'fillStyle': '#ff3300', 'text': 'CA$40'},
+        {'fillStyle': '#ff9900', 'text': '1 more chance'}
+      ],
+      'animation': {
+        'type': 'spinToStop',
+        'duration': 5,
+        'spins': 8,
+        'callbackFinished': (segment) => {
+          alert(`🎉 恭喜你抽中：${segment.text}`);
+          if (window.Telegram && Telegram.WebApp) {
+            Telegram.WebApp.sendData(segment.text);
+          }
+        }
+      }
+    });
+
+    document.getElementById('spinBtn').addEventListener('click', () => {
+      wheel.startAnimation();
+      document.getElementById('spinBtn').disabled = true;
+    });
+
+    if (window.Telegram && Telegram.WebApp) {
+      Telegram.WebApp.ready();
+    }
+  </script>
+</body>
+</html>
